@@ -44,14 +44,15 @@ jobs:
           emcmake cmake ..
           emmake make -j4
 
-      # --- Web出力用に整理 ---
+      # --- Web出力用に整理（ヒアドキュメントで安全にHTML生成） ---
       - name: Prepare web output
         run: |
           mkdir -p dist
           cp build/nxengine.js dist/ || true
           cp build/nxengine.wasm dist/ || true
           cp build/nxengine.data dist/ || true
-          echo '<!DOCTYPE html>
+          cat << 'EOF' > dist/index.html
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -62,7 +63,8 @@ jobs:
   <p>Place your Cave Story data folder here.</p>
   <script src="nxengine.js"></script>
 </body>
-</html>' > dist/index.html
+</html>
+EOF
 
       # --- Pages用にアップロード ---
       - name: Upload artifact
