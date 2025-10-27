@@ -35,6 +35,10 @@ jobs:
           emcmake cmake .. \
             -DSDL2_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libSDL2.a \
             -DSDL2_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include \
+            -DSDL2_IMAGE_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libSDL2_image.a \
+            -DSDL2_IMAGE_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include/SDL2 \
+            -DSDL2_MIXER_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libSDL2_mixer.a \
+            -DSDL2_MIXER_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include/SDL2 \
             -DZLIB_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libz.a \
             -DZLIB_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include \
             -DPNG_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libpng16.a \
