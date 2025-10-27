@@ -1,4 +1,4 @@
-name: Build NXEngine-evo
+name: Build NXEngine-evo (HTML5)
 
 on:
   push:
