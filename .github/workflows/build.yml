@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          emcmake cmake ..
+          emcmake cmake .. -DSDL2_LIBRARY=/usr/lib/emscripten/system/lib/libSDL2.a -DSDL2_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include
           emmake make -j4
 
       - name: Prepare web output
