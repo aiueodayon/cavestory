@@ -11,34 +11,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # --- ソース取得 ---
       - name: Checkout source
         uses: actions/checkout@v4
         with:
           submodules: true
 
+      # --- Emscriptenセットアップ ---
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v14
 
-      - name: Install dependencies
+      # --- ネイティブ依存ライブラリ（必要に応じて） ---
+      - name: Install native dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsndfile1-dev libogg-dev libvorbis-dev libasound2-dev libgl1-mesa-dev
+          sudo apt-get install -y cmake libasound2-dev libgl1-mesa-dev
 
+      # --- Web向けビルド ---
       - name: Build for Web
         run: |
           mkdir -p build
           cd build
-          emcmake cmake .. -DSDL2_LIBRARY=/usr/lib/emscripten/system/lib/libSDL2.a -DSDL2_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include
+          emcmake cmake .. \
+            -DSDL2_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libSDL2.a \
+            -DSDL2_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include \
+            -DZLIB_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libz.a \
+            -DZLIB_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include \
+            -DPNG_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libpng16.a \
+            -DPNG_PNG_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include
           emmake make -j4
 
+      # --- Web出力用に整理 ---
       - name: Prepare web output
         run: |
           mkdir -p dist
           cp build/nxengine.js dist/ || true
           cp build/nxengine.wasm dist/ || true
           cp build/nxengine.data dist/ || true
+          # HTMLを一行で書くことで YAML 構文エラー回避
           echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>NXEngine-evo for Web</title></head><body><h1>NXEngine-evo for Web</h1><p>Place your Cave Story data folder here.</p><script src="nxengine.js"></script></body></html>' > dist/index.html
 
+      # --- GitHub Pages用にアップロード ---
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
