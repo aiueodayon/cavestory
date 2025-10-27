@@ -1,0 +1,57 @@
+name: Build NXEngine for Web
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # NXEngine-evoをサブモジュールで取得する場合必要
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
+
+      - name: Build for Web
+        run: |
+          cd nxengine-evo
+          mkdir build && cd build
+          emcmake cmake ..
+          emmake make -j4
+
+      - name: Copy web output
+        run: |
+          mkdir -p dist
+          cp nxengine-evo/build/nxengine index.html dist/ || true
+          cp nxengine-evo/build/nxengine.js dist/ || true
+          cp nxengine-evo/build/nxengine.wasm dist/ || true
+          echo '<h1>NXEngine for Web</h1><p>Place your Cave Story data folder here.</p>' > dist/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
