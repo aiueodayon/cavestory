@@ -38,8 +38,11 @@ jobs:
             -DZLIB_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libz.a \
             -DZLIB_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include \
             -DPNG_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libpng16.a \
-            -DPNG_PNG_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include
+            -DPNG_PNG_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include \
+            -DJPEG_LIBRARY=$EMSDK/upstream/emscripten/system/lib/libjpeg.a \
+            -DJPEG_INCLUDE_DIR=$EMSDK/upstream/emscripten/system/include
           emmake make -j4
+
 
       # --- Web出力用に整理 ---
       - name: Prepare web output
